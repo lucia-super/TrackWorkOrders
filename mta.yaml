@@ -1,43 +1,107 @@
-_schema-version: '3.1'
 ID: trackworkorders
-version: 1.0.0-SNAPSHOT
-description: "trackworkorders application"
+_schema-version: "3.1"
+description: GTT Track Workorders Application
 parameters:
+  deploy_mode: html5-repo
   enable-parallel-deployments: true
-   
-build-parameters:
-  before-all:
-   - builder: custom
-     commands:
-      - npm install --production
-      - npx -p @sap/cds-dk cds build --production
+version: 1.0.0-SNAPSHOT
 
 modules:
- # --------------------- SERVER MODULE ------------------------
- - name: trackworkorders-srv
- # ------------------------------------------------------------
-   type: java
-   path: srv
-   build-parameters:
-     builder: custom
-     commands: [ mvn clean package ]
-     build-result: "target/*.[wj]ar"
-   provides:
-    - name: srv-api      # required by consumers of CAP services (e.g. approuter)
-      properties:
-        srv-url: ${default-url}
+# Module: Approuter
+  - name: com.sap.ibso.trackworkorders.approuter
+    type: javascript.nodejs
+    path: approuter
+    parameters:
+      disk-quota: 256M
+      memory: 512M
+    properties:
+      destinations:
+        - forwardAuthToken: true
+          name: dest_odata_srv
+          url: ~{srv_api/url}
+    requires:
+      - name: ibso_trackworkorders_html5_repo_runtime
+      - name: ibso_trackworkorders_portal_resources
+      - name: ibso_trackworkorders_uaa
+      - name: srv_api
 
+# Module: Service
+  - name: com.sap.ibso.trackworkorders.srv
+    type: java
+    path: srv
+    parameters:
+      disk-quota: 1G
+      memory: 2G
+    provides:
+      - name: srv-api
+        properties:
+          url: ${default-url}
+    requires:
+      - name: ibso_trackworkorders_uaa
+      - name: ibso_trackworkorders_dest
+# Module: UI Deployer
+  - name: com.sap.ibso.trackworkorders.ui.deployer
+    type: com.sap.html5.application-content
+    path: uideployer
+    requires:
+      - name: ibso_trackworkorders_html5_repo_host
+    build-parameters:
+      requires:
+        - name: trackworkorders
+          artifacts:
+            - "./*"
+# Module: FLP
+  - name: com.sap.ibso.trackworkorders.flp
+    type: com.sap.portal.content
+    path: flp
+    parameters:
+      buildpack: https://github.com/cloudfoundry/nodejs-buildpack/releases/download/v1.6.39/nodejs-buildpack-cflinuxfs3-v1.6.39.zip
+      memory: 128M
+      stack: cflinuxfs3
+    requires:
+      - name: ibso_trackworkorders_portal_resources
+      - name: ibso_trackworkorders_uaa
+      - name: ibso_trackworkorders_html5_repo_host
+      - name: com.sap.ibso.trackworkorders.ui.deployer
+# Module: trackworkorders
+  - name: trackworkorders
+    type: html5
+    path: app/trackworkorders
+    build-parameters:
+      builder: grunt
+      supported-platforms: []
+      build-result: dist
 
 resources:
- # services extracted from CAP configuration
- # 'service-plan' can be configured via 'cds.requires.<name>.vcap.plan'
-# ------------------------------------------------------------
- - name: trackworkorders-db
-# ------------------------------------------------------------
-   type: com.sap.xs.hdi-container
-   parameters:
-     service: hana  # or 'hanatrial' on trial landscapes
-     service-plan: hdi-shared
-   properties:
-     hdi-service-name: ${service-name}
+# Service: xsuaa 
+  - name: ibso_trackworkorders_uaa
+    type: org.cloudfoundry.managed-service
+    parameters:
+      path: ./xs-security.json
+      service: xsuaa
+      service-plan: application
+# Service: html5-apps-repo-runtime
+  - name: ibso_trackworkorders_html5_repo_runtime
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-runtime
+# Service: html5-apps-repo-host
+  - name: ibso_trackworkorders_html5_repo_host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host
+# Service: destination
+  - name: ibso_trackworkorders_dest
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite
+# Service: portal
+  - name: ibso_trackworkorders_portal_resources
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: portal
+      service-plan: standard
 
