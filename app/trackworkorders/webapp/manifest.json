@@ -14,6 +14,20 @@
 		"sourceTemplate": {
 			"id": "html5moduletemplates.basicSAPUI5ApplicationProjectModule",
 			"version": "1.40.12"
+        },
+        "crossNavigation": {
+			"inbounds": {
+				"intent1": {
+					"signature": {
+						"parameters": {},
+						"additionalParameters": "allowed"
+					},
+					"semanticObject": "trackworkorders",
+					"action": "action1",
+					"title": "Track Work Orders",
+					"icon": "sap-icon://account"
+				}
+			}
 		}
 	},
 	
