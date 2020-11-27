@@ -33,7 +33,7 @@ modules:
       disk-quota: 1G
       memory: 2G
     provides:
-      - name: srv-api
+      - name: srv_api
         properties:
           url: ${default-url}
     requires:
