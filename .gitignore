@@ -3,7 +3,6 @@ gen/
 node_modules/
 target/
 *.db
-.DS_Store
 _out
 .che/
 .cds_gen.log
@@ -32,17 +31,6 @@ readme.md
 README.md
 *.factory
 .*/localService/metadata.xml
-app/advertisement/webapp/localService/metadata.xml
-app/company/webapp/localService/
-app/goodsmastercommon/webapp/localService/
-app/goodsmasterindividual/webapp/localService/
-app/mrostocker/webapp/localService/
-app/user/webapp/localService/
-app/inventorycountinglog/webapp/localService/
-app/goodsreceipt/webapp/localService/
-app/goodsreceiptmgmt/webapp/localService/
-app/monitor/webapp/localService/
-srv/.factorypath
 /srv/src/main/resources/edmx/
 srv/src/main/resources/edmx/
 srv/src/main/resources/edmx/*.xml
@@ -70,11 +58,15 @@ gen
 .classpath
 .settings/
 .cds_gen.log
-
+**/srv/target
 .mta/
 *.mtar
 *.war
 .DS_Store
+*.zip
+*.jar
+srv/target/
+csn.json
 
 node_modules/
 **/node_modules/

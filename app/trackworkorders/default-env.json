@@ -1,0 +1,10 @@
+{
+    "destinations": [
+        {
+            "name": "srv_api",
+            "url": "https://com-sap-trusco-mrostocker-srv.cfapps.sap.hana.ondemand.com",
+            "forwardAuthToken": true,
+            "strictSSL": false
+        }
+    ]
+}

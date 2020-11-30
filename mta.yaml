@@ -50,6 +50,7 @@ modules:
         - name: trackworkorders
           artifacts:
             - "./*"
+          target-path: resources/trackworkorders
 # Module: FLP
   - name: com.sap.ibso.trackworkorders.flp
     type: com.sap.portal.content
